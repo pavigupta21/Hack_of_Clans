@@ -2,9 +2,31 @@ const mongoose = require("mongoose");
 
 const userschema = new mongoose.Schema(
     {
-        name: { type: String, required: true,  maxlength: 30 },
-        email: { type: String, required: true, maxlength: 200, unique: true },
-        password: { type: String, required: true, minlength: 6, maxlength: 1024 },
+        email:{
+            type: String, 
+            required: true, 
+            unique: true
+        }, 
+        password: {
+            type: String, 
+            required: true
+        },
+        name: {
+            type: String, 
+            required: true
+        }, 
+        lastLogin: {
+            type: Date, 
+            default: Date.now
+        },
+        isVerified: {
+            type: Boolean,
+            default: false 
+        },
+        resetPasswordToken: String, 
+        resetPasswordExpiresAt: Date, 
+        verificationToken: String, 
+        verificationTokenExpiresAt: Date,
         bio: { type: String, maxlength: 250 },
         skill_set: [{ type: String }],
         int_hackathon:[{type:String}],

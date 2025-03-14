@@ -2,12 +2,13 @@ const express = require("express")
 const cors = require("cors")
 const mongoose = require("mongoose")
 const userRoute = require("./Routes/userRoute");
-
+const cookieParser = require("cookie-parser");
 
 const app = express()
 require("dotenv").config();
+app.use(cookieParser());
 app.use(express.json())
-app.use(cors());
+app.use(cors({origin: "http://localhost:5173",credentials: true })); // Soham nantar ekta check karun ghe ... 
 app.use("/api/users",userRoute)
 
 app.get("/",(req,res)=>{

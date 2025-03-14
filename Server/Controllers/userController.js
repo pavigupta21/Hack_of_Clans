@@ -2,6 +2,11 @@ const userModel = require("../Models/userModel.js");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
+const generateTokenandSetCookie = require("../Utils/GenerateTokenSetCookie.js");
+const sendVerificationEmail = require("../Mail/emails.js");
+const sendWelcomeEmail = require("../Mail/emails.js");
+const sendPasswordResetEmail = require("../Mail/emails.js");
+const sendResetSuccessEmail = require("../Mail/emails.js");
 const { OAuth2Client } = require("google-auth-library");
 
 // Create a Google OAuth2 client using your CLIENT_ID and CLIENT_SECRET from the .env file.
@@ -13,102 +18,246 @@ const oAuth2Client = new OAuth2Client(
 );
 
 const signupUser = async (req, res) => {
-  try {
-    const { name, email, password, skill_set, bio } = req.body;
+    const { email, password, name, skill_set, bio } = req.body ; 
+    try {
+        if(!email || !password || !name){
+            throw new Error("All fields are required");
+        }
 
-    if (!email || !validator.isEmail(email)) {
-      return res.status(400).json("Invalid email");
-    }
+        const userAlreadyExists = await userModel.findOne({email}); 
+        if(userAlreadyExists){
+            return res.status(400).json({
+                success : false , 
+                message: "User Already Exists"
+            });  
+        }
 
-    const user = await userModel.findOne({ email });
-    if (user) {
-      return res.status(400).json("Email already exists");
-    }
+        const hashedPassword = await bcrypt.hash(password, 10);
+    
+        const verificationToken = Math.floor(100000 + Math.random()* 900000).toString(); 
 
-    if (!password || password.length < 6) {
-      return res.status(400).json("Password must be at least 6 characters");
-    }
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+        const user = new userModel({
+            email, 
+            password: hashedPassword, 
+            name,
+            verificationToken,
+            verificationTokenExpiresAt : Date.now() + 24 * 60 * 60 * 1000 , // 24 hrs
+            skill_set: skill_set || [],
+            teams: [],
+            leaderin: [],
+            bio: bio || "",
+        })
 
-    const newUser = await userModel.create({
-      name,
-      email,
-      password: hashedPassword,
-      skill_set: skill_set || [],
-      teams: [],
-      leaderin: [],
-      bio: bio || "",
-    });
+        await user.save(); 
 
-    // Generate JWT Token
-    const token = jwt.sign(
-      {
-        id: newUser._id,
-        teams: newUser.teams,
-        leaderin: newUser.leaderin,
-      },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "1d",
-      }
-    );
+        generateTokenandSetCookie(res, user._id); 
+        
+        await sendVerificationEmail(user.email, verificationToken);
 
-    res.status(201).json({
-      _id: newUser._id,
-      name: newUser.name,
-      email: newUser.email,
-      skill_set: newUser.skill_set,
-      teams: newUser.teams,
-      leaderin: newUser.leaderin,
-      bio: newUser.bio,
-      token,
-    });
-  } catch (error) {
-    res.status(500).json(error.message);
-  }
+        res.status(201).json({
+            success : true, 
+            message : "User Created Successfully", 
+            user : {
+                ...user._doc, 
+                password: undefined
+            }
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            success : false , 
+            message : error.message
+        });
+    } 
 };
 
 const loginUser = async (req, res) => {
-  try {
-    const { email, password } = req.body;
+  const { email, password } = req.body ; 
+      
+      try {
+          const user = await userModel.findOne({email}); 
+          if(!user){
+              console.log("User not found "); 
+              return res.status(400).json({
+                  success: false, 
+                  message: "User not found please signin", 
+              })
+          }
+          const isPasswordValid = await bcrypt.compare(password, user.password); 
+          if(!isPasswordValid){
+              return res.status(400).json({
+                  success: false,
+                  message: "Invalid credentials"
+              })
+          }
+  
+          generateTokenandSetCookie(res, user._id); 
+  
+          user.lastLogin = new Date(); 
+          await user.save(); 
+  
+          res.status(200).json({
+              success : true, 
+              message : "User Logged in", 
+              user : {
+                  ...user._doc,
+                  password: undefined,
+              }
+          })
+      } catch (error) {
+          console.log(error); 
+          res.status(400).json({
+              success: false, 
+              message: error.message
+          });
+      }
+};
 
-    // Check if user exists
-    const user = await userModel.findOne({ email });
-    if (!user) {
-      return res.status(400).json("Email doesn't exist");
+const verifyEmail = async (req, res) => {
+    const {code} = req.body ; 
+    try {
+        const user = await userModel.findOne( {
+            verificationToken : code, 
+            verificationTokenExpiresAt: {$gt : Date.now() }
+        })
+        if(!user) { 
+            return res.status(400).json({
+                success : false , 
+                message : "Invalid or expired verification code"
+            })
+        }
+        user.isVerified = true ; 
+        user.verificationToken = undefined ; 
+        user.verificationTokenExpiresAt = undefined ; 
+
+        await user.save() ; 
+
+        await sendWelcomeEmail(user.email, user.name) ;
+        
+        res.status(200).json({
+            success : true, 
+            message: "Email Verified successfully", 
+            user : [{
+                    ...user._doc, 
+                    password : undefined,
+                }]
+        })
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            success: false , 
+            message: "Server Error"
+        });
     }
+};
 
-    // Compare hashed password
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json("Invalid credentials");
+const forgotPassword = async (req, res) => {
+    
+    const {email} = req.body; 
+    try {
+        const user = await userModel.findOne({email}); 
+
+        if(!user){
+            return res.status(400).json({
+                success: false, 
+                message: "User not found",
+            })
+        }
+
+        const resetToken = crypto.randomBytes(20).toString("hex");
+        const resetPasswordExpiresAt = Date.now() + 1*60*60*1000; 
+
+        user.resetPasswordToken = resetToken; 
+        user.resetPasswordExpiresAt = resetPasswordExpiresAt ;
+
+        await user.save();  
+
+        //send email 
+        await sendPasswordResetEmail(user.email, `${process.env.CLIENT_URL}/reset-password/${resetToken}`);
+
+        res.status(200).json({
+            success: true, 
+            message: "Password reset link sent to your email",
+        });
+
+    } catch (error) {
+        console.log(error);
     }
+};
 
-    // Generate JWT Token
-    const token = jwt.sign(
-      {
-        id: user._id,
-        teams: user.teams,
-        leaderin: user.leaderin,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: "1d" }
-    );
+const resetPassword = async (req, res) => {
+    try {
+        const {token} = req.params; 
+        const {password} = req.body; 
+        
+        const user = await userModel.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpiresAt: {$gt : Date.now()},
+        })
 
-    res.status(200).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      skill_set: user.skill_set,
-      teams: user.teams,
-      leaderin: user.leaderin,
-      bio: user.bio,
-      token,
-    });
-  } catch (error) {
-    res.status(500).json(error.message);
-  }
+        if(!user){
+            return res.status(400).json({
+                success: false,
+                message: "User not found",
+            })
+        }
+
+        const hashedPassword = await bcryptjs.hash(password, 10);
+
+        user.password = hashedPassword ;
+        user.resetPasswordToken = undefined, 
+        user.resetPasswordExpiresAt = undefined, 
+
+        await user.save();
+        await sendResetSuccessEmail(user.email);
+
+        res.status(200).json({
+            success: true, 
+            message: "Password reset successful",
+        })
+
+    } catch (error) {
+        
+    }
+};
+
+const logout = async (req, res) => {
+  res.clearCookie("token"); 
+  res.status(200).json({
+      success: true,
+      message: "Logged out Successfully",
+  })
+};
+
+const checkAuth = async (req, res) => {
+    try {
+        const user = await userModel.findById(req.userid).select("-password"); // -password to unselect the password
+
+        if(!user){
+            return res.status(400).json({
+                success: false, 
+                message: "User not found",
+            })
+        }
+
+        res.status(200).json({
+            success: true, 
+            user : {
+                ...user._doc, 
+                resetPasswordExpiresAt : undefined, 
+                resetPasswordToken: undefined,
+
+            }
+        })
+    
+    } catch (error) {
+        console.log(error, "Error in check auth"); 
+        return res.status(400).json({
+            success: false, 
+            message: error.message,
+        })
+    }
 };
 
 /**
@@ -262,4 +411,4 @@ const google_login = async (req, res) => {
   }
 };
 
-module.exports = { signupUser, loginUser, google_login, google_signup };
+module.exports = { signupUser, loginUser, verifyEmail, forgotPassword, resetPassword, logout, checkAuth, google_login, google_signup };
