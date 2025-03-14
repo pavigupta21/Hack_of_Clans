@@ -7,6 +7,7 @@ const sendVerificationEmail = require("../Mail/emails.js");
 const sendWelcomeEmail = require("../Mail/emails.js");
 const sendPasswordResetEmail = require("../Mail/emails.js");
 const sendResetSuccessEmail = require("../Mail/emails.js");
+const crypto = require("crypto");
 const { OAuth2Client } = require("google-auth-library");
 
 // Create a Google OAuth2 client using your CLIENT_ID and CLIENT_SECRET from the .env file.
