@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sender = process.env.SMTP_USER; 
+const sender = process.env.SMTP_USER; //Soham Pavi make an gmail with HackOfClans and give its email address and password here 
 
 const sendVerificationEmail = async (email, verificationToken) => {
   try {
