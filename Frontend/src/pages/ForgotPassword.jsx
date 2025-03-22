@@ -64,6 +64,7 @@ const ForgotPassword = () => {
                     <p className='text-gray-300 mb-6'>
 							If an account exists for {email}, you will receive a password reset link shortly.
                     </p>
+                    {/* {trial comment } */}
                 </div>
                 
             )}
