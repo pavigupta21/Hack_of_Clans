@@ -1,12 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User2 } from 'lucide-react';
-import Profile from './Profile'; // Make sure path is correct based on your file structure
+import { Link, useLocation } from 'react-router-dom';
+import Profile from './Profile';
 
 const Navbar = () => {
   const [profileOpen, setProfileOpen] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
+  const location = useLocation();
   
+  useEffect(() => {
+    let timer;
+    if (profileOpen) {
+      setShowProfile(true);
+    } else {
+      timer = setTimeout(() => {
+        setShowProfile(false);
+      }, 500); // Match this to your transition duration
+    }
+    
+    return () => clearTimeout(timer);
+  }, [profileOpen]);
+
   const toggleProfile = () => {
     setProfileOpen(!profileOpen);
+  };
+
+  const isActive = (path) => {
+    return location.pathname === path || 
+           (location.pathname === '/' && path === '/explore');
   };
 
   return (
@@ -20,9 +41,9 @@ const Navbar = () => {
           >
             <div className="text-white text-sm ml-[5vw]">STOP-PBL</div>
             <div className="flex justify-center gap-10 text-xs font-thin">
-              <div>HOME</div>
-              <div>EXPLORE</div>
-              <div>MY TEAMS</div>
+              <Link to="/home" className={isActive('/home') ? 'text-purple-300' : ''}>HOME</Link>
+              <Link to={`/explore`} className={isActive('/explore') ? 'text-purple-300' : ''}>EXPLORE</Link>
+              <Link to="/teams" className={isActive('/teams') ? 'text-purple-300' : ''}>MY TEAMS</Link>
               <div>LOBBY</div>
             </div>
             <div 
@@ -37,21 +58,19 @@ const Navbar = () => {
         </div>
       </div>
 
-
-<div 
-  className={`fixed inset-0 z-50 ${profileOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
->
-  
-  <div 
-    className="fixed inset-y-0 right-0 w-[90vw] transition-transform duration-500 ease-in-out"
-    style={{ 
-      transform: profileOpen ? 'translateX(0)' : 'translateX(100%)' ,
-      pointerEvents: 'auto'
-    }}
-  >
-    {profileOpen && <Profile onClose={toggleProfile} />}
-  </div>
-</div>
+      <div 
+        className={`fixed inset-0 z-50 ${profileOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
+      >
+        <div 
+          className="fixed inset-y-0 right-0 w-[90vw] transition-transform duration-500 ease-in-out"
+          style={{ 
+            transform: profileOpen ? 'translateX(0)' : 'translateX(100%)',
+            pointerEvents: 'auto'
+          }}
+        >
+          {showProfile && <Profile onClose={toggleProfile} />}
+        </div>
+      </div>
     </>
   );
 };
