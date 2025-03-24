@@ -33,31 +33,27 @@ const Card3 = ({ username, userid, mainskill, bio, whyme, skillslist }) => {
         ></div>
 
         <div className="absolute top-0 left-0  ">
-          <div className={` flex flex-nowrap opacity-15  `}>
-            <img
-              className={`transition-all absolute duration-1000 ease-in-out rotate-180 ${hovered ? 'translate-y-[195px] -translate-x-[20px]' : '-translate-y-[130%] -translate-x-[15px]'
+          <div className={` opacity-5  `}>
+          <div
+              className={`w-[100px] absolute  top-72 -left-10 transition-all duration-1000 ease-in-out  ${hovered ? '' : '-translate-x-[60px]'
                 }`}
-              src="src/assets/polygon.png"
-            ></img>
-            <img
-              className={`transition-all duration-700 ease-in-out ${hovered ? 'translate-x-[110px] -translate-y-[50px]' : 'translate-x-[130px] translate-y-[265px]'
+            ><img src='/src/assets/polygon.png'/></div>
+          <div
+              className={`w-[240px] absolute  -top-8 -right-[380px] transition-all duration-1000 ease-in-out  ${hovered ? 'translate-x-[20px]' : 'translate-x-[250px] -translate-y-[100px]'
                 }`}
-              src='src/assets/polygon.png'
-            />
-            <img
-             className={`transition-all duration-1000 translate-y-[220px] rotate-180 scale-50 ease-in-out ${hovered ? 'translate-x-[140px] ' : 'translate-x 40px] '
+            ><img src='/src/assets/polygon.png'/></div>
+          <div
+              className={`w-[100px] absolute rotate-180 top-56 -right-[370px] transition-all duration-1000 ease-in-out  ${hovered ? 'translate-x-[20px]' : 'translate-x-[120px]'
                 }`}
-              src='src/assets/polygon.png'
-            />
-            <img
-             className={`transition-all duration-1000 rotate-180 ease-in-out ${hovered ? 'translate-x-[140px] -translate-y-[50px]' : 'translate-x 40px] translate-y-[265px]'
+            ><img src='/src/assets/polygon.png'/></div>
+          <div
+              className={`w-[270px] absolute top-0 left-32 transition-all duration-1000 ease-in-out  ${hovered ? 'translate-y-[230px]' : 'translate-y-[530px]'
                 }`}
-              src='src/assets/polygon.png'
-            />
-
-
-
-
+            ><img src='/src/assets/polygon.png'/></div>
+            <div
+              className={` rotate-180 w-[240px] h-fit absolute top-0 -left-2 translate-y-44 transition-all duration-1000 ease-in-out  ${hovered ? 'translate-y-[200px]' : '-translate-y-[300px]'
+                }`}
+            ><img src='/src/assets/polygon.png'/></div>
           </div>
         </div>
 
@@ -96,7 +92,7 @@ const Card3 = ({ username, userid, mainskill, bio, whyme, skillslist }) => {
 
           </div>
           <div className='flex absolute bottom-4 gap-4'>
-            <div className={`text-base transition-all duration-700 ease-in-out bg-black rounded-full px-12  py-2 my-3 hover:btn-grd ${hovered ? 'opacity-100' : ' opacity-0'} `}>VIEW</div>
+            <div className={`text-base  ease-in-out bg-black rounded-full px-12  py-2 my-3 hover:btn-grd transition-all duration-700 ${hovered ? 'opacity-100' : ' opacity-0'} `}>VIEW</div>
             <div className={`text-base transition-all duration-700 ease-in-out rounded-full px-12 py-1.5 my-3 btn-grd ${hovered ? 'opacity-100' : ' opacity-0'} `}>INVITE</div>
           </div>
 
