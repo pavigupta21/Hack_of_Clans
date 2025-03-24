@@ -57,7 +57,7 @@ const Teams = () => {
     }
     
     return (
-      <div className='w-full h-fit border-[1px]  rounded-2xl cursor-pointer border-cyan-600' onClick={handleClick}>
+      <div className='w-full  border-[1px]  rounded-2xl cursor-pointer border-cyan-600' onClick={handleClick}>
         <div
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
@@ -154,7 +154,7 @@ const Teams = () => {
   return (
     <>
       <div className='flex animtrig flex-row h-[85vh] px-6 justify-center'>
-        <div className='w-fit h-fit overflow-hidden  pl-5'>
+        <div className='w-fit h-[95vh] overflow-y-scroll  pl-5'>
           <div className='h-[100vh] w-[35vw] z-10 relative scrollbar-none text-white'>
             <div className='w-full scrollbar-none sticky top-0 left-0 h-full'>
               {/* Animation elements */}
@@ -188,8 +188,7 @@ const Teams = () => {
             </div>
             
             {/* Team list section */}
-            <div className='w-fit h-fit overflow-y-scroll'>
-            <div className='absolute left-0 w-[80%] h-full flex pt-24 top-0 flex-col gap-5'>
+            <div className='absolute left-0 w-[80%] h-full flex top-32 flex-col gap-5'>
               {teamsData.map((team) => (
                 <TeamSelect 
                   key={team.id}
@@ -201,7 +200,6 @@ const Teams = () => {
                   handleClick={() => setteamid(team.id)}
                 />
               ))}
-            </div>
             </div>
           </div>
         </div>
