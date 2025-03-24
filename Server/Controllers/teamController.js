@@ -1,12 +1,10 @@
 const teamModel = require("../Models/teamModel.js");
-
-
+const userModel = require("../Models/userModel.js");
 //creating a new team
 const createTeam = async (req, res) => {
     try {
         const { name, members, leader, desc } = req.body;
-        const newTeam = new teamModel({ name, members, leader, desc });
-        await newTeam.save();
+        const newTeam = await teamModel.create({ name, members, leader, desc });
         res.status(201).json({ message: "Team created successfully!", team: newTeam });
     } catch (error) {
         res.status(500).json({ error: "Failed to create team"});
@@ -17,16 +15,16 @@ module.exports = {createTeam};
 
 
 
-// Edit Team Details (Name & Description)
+// Edit Team Details
 const editTeamDetails = async (req, res) => {
     try {
         const { teamId } = req.params; // Extract team ID from URL parameters
-        const { name, desc } = req.body; // Extract new name & description from request body
+        const { name, desc, part_hackathon, req_skills } = req.body; // Extract new name , description,hackathons,req_skills
 
         // Find and update the team
-        const updatedTeam = await teamModel.findByIdAndUpdate(
-            teamId, 
-            { name, desc }, 
+        const updatedTeam = await teamModel.findOneAndUpdate(
+            {_id:teamId}, 
+            { name, desc, part_hackathon, req_skills }, 
             { new: true } // Returns the updated document
         );
 
@@ -104,7 +102,7 @@ const deleteTeam = async (req, res) => {
         const { teamId } = req.params;
 
         // Delete the team from the database
-        const deletedTeam = await teamModel.findByIdAndDelete(teamId);
+        const deletedTeam = await teamModel.findOneAndDelete({_id:teamId});
 
         // If no team was found and deleted, return an error
         if (!deletedTeam) {
@@ -118,5 +116,37 @@ const deleteTeam = async (req, res) => {
 };
 
 module.exports = { deleteTeam };
+
+
+module.exports = { getSortedTeams };
+
+//Get Sorted Users Based on Matching Skills
+const getSortedUsers = async (req, res) => {
+
+    try{
+        const { teamId } = req.params; // Get teamId from request params
+         
+        //Directly fetch the team's required skills
+        const team = await teamModel.findById(teamId);
+        const teamSkills = team?.req_skills || []; // If no skills, default to an empty array
+
+         //Fetch all users from the database
+         let users = await userModel.find();
+
+         //Sort users by the number of matching skills
+         users.sort((userA, userB) => {
+            const matchesA = userA.skill_set.filter(skill => teamSkills.includes(skill)).length;
+            const matchesB = userB.skill_set.filter(skill => teamSkills.includes(skill)).length;
+            return matchesB - matchesA; // Sort in descending order (more matches first)
+        });
+        res.status(200).json({ message: "Users sorted successfully", users });
+
+    }
+    catch (error) {
+        res.status(500).json({ error: "Failed to fetch users", details: error.message });
+    }
+}
+
+module.exports = { getSortedUsers };
 
 

@@ -262,4 +262,31 @@ const google_login = async (req, res) => {
   }
 };
 
-module.exports = { signupUser, loginUser, google_login, google_signup };
+// Get Sorted Teams Based on Matching Skills
+const getSortedTeams = async (req, res) => {
+    try {
+        const { userId } = req.params; // Get userId from request params
+
+        // Directly fetch the user's skill set
+        const user = await userModel.findById(userId);
+        const userSkills = user?.skill_set || []; // If no skills, default to an empty array
+
+        // Fetch all teams from the database
+        let teams = await teamModel.find();
+
+        // Sort teams by the number of matching skills
+        teams.sort((teamA, teamB) => {
+            const matchesA = teamA.req_skills.filter(skill => userSkills.includes(skill)).length;
+            const matchesB = teamB.req_skills.filter(skill => userSkills.includes(skill)).length;
+            return matchesB - matchesA; // Sort in descending order (more matches first)
+        });
+
+        res.status(200).json({ message: "Teams sorted successfully", teams });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch teams", details: error.message });
+    }
+};
+
+
+module.exports = { signupUser, loginUser, google_login, google_signup,getSortedTeams };
+
