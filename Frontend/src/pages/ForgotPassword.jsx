@@ -2,16 +2,21 @@ import React from 'react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Input from '../components/Input';
-import { Mail, ArrowLeft } from 'lucide-react';
+import { Mail, ArrowLeft, Loader } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { useClanStore } from '../store/clan.store';
 
 const ForgotPassword = () => {
 
     const [email, setEmail] = useState(""); 
-    const [isSubmitted, setIsSubmitted] = useState(false); 
+    const [isSubmitted, setIsSubmitted] = useState(false);
+    const {isLoading, ForgotPassword} = useClanStore(); 
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        await ForgotPassword(email);
+        setIsSubmitted(true); 
     }
   return (
     <div
@@ -42,15 +47,14 @@ const ForgotPassword = () => {
                      required
                     />
 
-                    <button
-                        className="mt-5 w-full py-3 px-4 bg-gradient-to-r from-purple-500 to-purple-600 
-                        text-white font-bold rounded-lg shadow-lg hover:from-violet-600 hover:to-purple-900 
-                        focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 
-                        focus:ring-offset-gray-900 transition duration-800 active:scale-95"
-                        type="submit"
-                        >
-                        Reset Password
-                    </button>
+                    <motion.button
+                        whileHover = {{scale: 1.02}}
+                        whileTap = {{scale: 0.95}}
+                        className='w-full py-3 px-4 bg-gradient-to-r from-violet-500 to-purple-600 text-white font-bold rounded-lg shadow-lg hover:from-violet-600 hover:to-purple-900 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200' 
+                        type='submit'
+                    >
+                        {isLoading ? <Loader className = 'size-6 animate-spin mx-auto' /> : "Send Reset Link"}
+                    </motion.button>
                 </form>
             ) : (
                 <div
@@ -64,13 +68,12 @@ const ForgotPassword = () => {
                     <p className='text-gray-300 mb-6'>
 							If an account exists for {email}, you will receive a password reset link shortly.
                     </p>
-                    {/* {trial comment } */}
                 </div>
                 
             )}
         </div>
         <div className='px-8 py-4 bg-gray-900 bg-opacity-50 flex justify-center'>
-				<Link to={"/login"} className='text-sm text-purple-400 hover:underline flex items-center'>
+				<Link to={"/auth/login"} className='text-sm text-purple-400 hover:underline flex items-center'>
 					<ArrowLeft className='h-4 w-4 mr-2' /> Back to Login
 				</Link>
         </div>

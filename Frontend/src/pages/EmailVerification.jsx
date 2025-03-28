@@ -1,7 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useClanStore } from '../store/clan.store';
 
 const EmailVerification = () => {
+
+
+    const {error, isLoading, verifyEmail} = useClanStore();
 
     const [code, setCode] = useState(["", "", "", "", "", ""]); 
     const inputRefs = useRef([]); 

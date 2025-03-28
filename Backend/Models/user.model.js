@@ -1,0 +1,85 @@
+import mongoose from 'mongoose'; 
+
+const userSchema = new mongoose.Schema({
+
+    email:{
+        type:String, 
+        required: true, 
+        unique:true, 
+    },
+    password:{
+        type: String, 
+        required: true, 
+    },
+    name:{
+        type: String, 
+        required: true,
+    },
+    lastlogin:{
+        type: Date,
+        default: Date.now
+    },
+    isVerified:{
+        type: Boolean, 
+        default: false, 
+    },
+
+    newUser:{
+        type: Boolean,
+        default:false,
+    },
+    
+    googleUser:{
+        type: Boolean, 
+        default: false,
+    },
+
+    resetPasswordToken: String, 
+    resetPasswordExpiresAt: Date, 
+    verificationToken: String, 
+    verificationTokenExpiresAt: Date,  
+
+    
+    hackathons:[
+        {
+            hackathon_name: String, 
+            isLeader: Boolean, 
+            members:[String]
+        }
+    ],
+
+    skills:[
+        {
+            skillname:String, 
+            level: String,
+        }
+    ],
+
+    personal_info:{
+        bio:{
+            type: String, 
+            default:"",
+        },
+        college:{
+            type: String, 
+            default: "",
+        }
+    },
+
+    personal_links:{
+        github_link:{
+            type:String, 
+            default:""
+        }, 
+        linkdin_link:{
+            type:String, 
+            default:""
+        }, 
+        portfolio_link:{
+            type:String, 
+            default:""
+        },
+    }
+},{timestamps: true});
+
+export const User = mongoose.model('User', userSchema);
