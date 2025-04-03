@@ -11,6 +11,9 @@ import ResetPasswordPage from './pages/ResetPassword';
 import AuthPages from './pages/AuthPages';
 import Home from './pages/Home';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import Navbar from './components/Navbar';
+import Lobby from './pages/Lobby';
+import { Toaster } from "react-hot-toast";
 
 // rona aa raha haiiii : ((
 
@@ -52,6 +55,8 @@ const App = () => {
 
   return (
     <>
+      <Navbar/>
+
       <Routes>
 
         {/* here there are auth routes */}
@@ -113,9 +118,37 @@ const App = () => {
         }
         />
 
+        <Route 
+        path='/explore' 
+        element= {
+          <ProtectedRoute>
+            <Home/>
+        </ProtectedRoute>} />
+
+        <Route 
+        path='/myteams' 
+        element= {
+          <ProtectedRoute>
+            <Home/>
+        </ProtectedRoute>} />
+
+        <Route 
+        path='/lobby' 
+        element= {
+          <ProtectedRoute>
+            <Lobby/>
+        </ProtectedRoute>} />
+
+        <Route 
+        path='/profile' 
+        element= {
+          <ProtectedRoute>
+            <Home/>
+        </ProtectedRoute>} />
 
 
       </Routes>
+      <Toaster />
     </>
   )
 }

@@ -14,7 +14,8 @@ export const useClanStore = create((set) => ({
     message: null,
     skills: [],
     personal_Info: {bio: null, college: null},
-    personal_links: {github_link: null, linkdin_link: null, portfolio_link: null}, 
+    personal_links: {github_link: null, linkdin_link: null, portfolio_link: null},
+    userTeams: [], 
 
     signup: async(email, password, name) => {
         set({isLoading:true, error:null}); 
@@ -168,5 +169,23 @@ export const useClanStore = create((set) => ({
             throw error; 
         }
     },
+
+    getUserTeams: async(userId) => {
+        set({isLoading: true, error: null});
+        try {
+            const response = await axios.post(`${API_URL}/teams/getteams`, {userId}) ;
+            console.log(response);
+            set({
+                isLoading: false,
+                userTeams: response.data.teams, 
+                error: null
+            })
+        } catch (error) {
+            set({error: error.response?.data?.message || "Error getting your teams ", isLoading: false}); 
+            throw error;
+        }
+    }
+
+
 
 }));

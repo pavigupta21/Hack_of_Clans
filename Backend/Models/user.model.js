@@ -15,6 +15,10 @@ const userSchema = new mongoose.Schema({
         type: String, 
         required: true,
     },
+    profilPic: {
+        type: String, 
+        default: "",
+    },
     lastlogin:{
         type: Date,
         default: Date.now
@@ -40,11 +44,10 @@ const userSchema = new mongoose.Schema({
     verificationTokenExpiresAt: Date,  
 
     
-    hackathons:[
+    teams:[
         {
-            hackathon_name: String, 
+            teamId: mongoose.Schema.Types.ObjectId, 
             isLeader: Boolean, 
-            members:[String]
         }
     ],
 

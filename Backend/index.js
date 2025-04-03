@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import clanRoutes from './Routes/clan.routes.js';
 import cookieParser from "cookie-parser";
+import messageRoutes from "./Routes/clanMessage.routes.js"
+import teamRoutes from "./Routes/clanTeam.routes.js"
 
 dotenv.config();
 const app = express(); 
@@ -27,6 +29,8 @@ app.get("/", (req, res) => {
 }); 
 
 app.use("/api/hackofclans", clanRoutes);
+app.use("/api/hackofclans/messages", messageRoutes);
+app.use("/api/hackofclans/teams", teamRoutes)
 
 app.listen(PORT, () => {
     connectDB();

@@ -1,5 +1,6 @@
 import React from 'react'
-import { Pencil, ShieldUser } from 'lucide-react'
+import { Pencil, ShieldUser, Navigation } from 'lucide-react'
+
 
 const Input = ({icon:Icon , ...props}) => {
   return (
@@ -62,6 +63,7 @@ export const LinksInput = ({img, name, ...handler}) => {
          />
     </div>
   )
-} 
+}
+
 
 export default Input;

@@ -337,3 +337,7 @@ export const startupHandler = async(req, res) => {
 		})
 	}
 };
+
+export const updateProfile = async (req, res) => {
+
+};
