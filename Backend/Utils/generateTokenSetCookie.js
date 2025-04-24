@@ -5,7 +5,7 @@ export const generateTokenSetCookie = async (res, userId) => {
         expiresIn: '7d',
     })
 
-    console.log("Token set"); 
+    // console.log("Token set"); 
 
     res.cookie("hackofclansauth", token, {
         httpOnly: true, 
@@ -14,7 +14,7 @@ export const generateTokenSetCookie = async (res, userId) => {
         maxAge: 7*24*60*60*1000, 
     })
 
-    console.log("cookie is : " , token);
+    // console.log("cookie is : " , token);
 
     return token ;
 }

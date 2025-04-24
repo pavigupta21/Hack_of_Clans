@@ -5,6 +5,8 @@ import { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail,sendRes
 import crypto from "crypto";
 import { oauth2Client } from '../Utils/googleConfig.js';
 import axios from 'axios';
+import cloudinary from "../Utils/cloudconfig.js";
+
 
 export const signup = async(req, res) => {
     const {email, password, name, skills, personal_links} = req.body; 
@@ -222,7 +224,7 @@ export const googleLogin = async(req, res) => {
 		// console.log("running ", googleRes);
 		oauth2Client.setCredentials(googleRes.tokens);
 		const token = googleRes.tokens.access_token;
-		console.log("token is :" , token);
+		// console.log("token is :" , token);
 		const userRes = await axios.get(
 			`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${token}`
 		)
@@ -251,7 +253,7 @@ export const googleLogin = async(req, res) => {
 		user.lastlogin = new Date();
 		await user.save();
 
-		console.log("running google Login and sending response");
+		// console.log("running google Login and sending response");
 		return res.status(200).json({
 			message: 'success',
 			token, 
@@ -339,5 +341,53 @@ export const startupHandler = async(req, res) => {
 };
 
 export const updateProfile = async (req, res) => {
+	const {user, skills, personal_Info, personal_links, profilePic } = req.body;
+
+	//Literally going to cryyyy nowwww please future omkar age se soch samaj ke code likha karoooo plan karo pehle aur fir likhoooo 
+	try {
+		const dbUser = await User.findById(user._id); 
+
+		if(!dbUser){
+			res.status(400).json({
+				success: false , 
+				message: "User not found"
+			})
+			return; 
+		}
+
+		let imageUrl = "" ;
+
+		if (profilePic) {
+			const uploadResponse = await cloudinary.uploader.upload(profilePic);
+			imageUrl = uploadResponse.secure_url;
+		}
+
+		if(skills) dbUser.skills = skills; 
+		if(personal_Info) dbUser.personal_info = personal_Info;
+		if(personal_links) dbUser.personal_links = personal_links;	
+		if(profilePic) dbUser.profilPic = imageUrl; 
+		
+		await dbUser.save(); 
+
+		// console.log({
+		// 	success: true, 
+		// 	skills, 
+		// 	personal_info:personal_Info,
+		// 	personal_links:personal_links,
+		// 	imageUrl:imageUrl,
+		// })
+
+		res.status(200).json({
+			success: true, 
+			user:dbUser,
+			skills, 
+			personal_info:personal_Info,
+			personal_links:personal_links,
+			imageUrl:imageUrl,
+		})
+
+	} catch (error) {
+		console.log(error, "Backend gave up on meeeeeeeee")
+	}
 
 };

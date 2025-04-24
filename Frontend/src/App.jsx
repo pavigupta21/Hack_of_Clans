@@ -14,6 +14,11 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import Navbar from './components/Navbar';
 import Lobby from './pages/Lobby';
 import { Toaster } from "react-hot-toast";
+import Explore from './pages/Explore';
+import AllHackathons from './pages/AllHackathons';
+import ProfilePage from './pages/ProfilePage';
+import MyTeams from './myteams/MyTeams';
+import AllUsers from './pages/AllUsers';
 
 // rona aa raha haiiii : ((
 
@@ -55,7 +60,7 @@ const App = () => {
 
   return (
     <>
-      <Navbar/>
+
 
       <Routes>
 
@@ -106,6 +111,7 @@ const App = () => {
         path='/' 
         element= {
           <ProtectedRoute>
+            <Navbar/>
             <Home/>
         </ProtectedRoute>} />
 
@@ -122,20 +128,39 @@ const App = () => {
         path='/explore' 
         element= {
           <ProtectedRoute>
-            <Home/>
+            <Navbar/>
+            <Explore/>
+        </ProtectedRoute>} />
+
+        <Route 
+        path='/explore/all-hackathons' 
+        element= {
+          <ProtectedRoute>
+            <Navbar/>
+            <AllHackathons/>
+        </ProtectedRoute>} />
+
+        <Route 
+        path='/explore/all-users' 
+        element= {
+          <ProtectedRoute>
+            <Navbar/>
+            <AllUsers/>
         </ProtectedRoute>} />
 
         <Route 
         path='/myteams' 
         element= {
           <ProtectedRoute>
-            <Home/>
+            <Navbar/>
+            <MyTeams/>
         </ProtectedRoute>} />
 
         <Route 
         path='/lobby' 
         element= {
           <ProtectedRoute>
+            <Navbar/>
             <Lobby/>
         </ProtectedRoute>} />
 
@@ -143,7 +168,8 @@ const App = () => {
         path='/profile' 
         element= {
           <ProtectedRoute>
-            <Home/>
+            <Navbar/>
+            <ProfilePage/>
         </ProtectedRoute>} />
 
 

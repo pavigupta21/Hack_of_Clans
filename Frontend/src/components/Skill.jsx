@@ -21,7 +21,7 @@ const Skill = ({skillname, d, className, active1, level1}) => {
             addskill({skillname, level:n});
             setLevel(n);
             setActive(1);
-            console.log(skills, {skillname, level:n})
+            // console.log(skills, {skillname, level:n})
         }
         
     }

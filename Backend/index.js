@@ -6,9 +6,11 @@ import clanRoutes from './Routes/clan.routes.js';
 import cookieParser from "cookie-parser";
 import messageRoutes from "./Routes/clanMessage.routes.js"
 import teamRoutes from "./Routes/clanTeam.routes.js"
+import exploreRoutes from "./Routes/explore.routes.js"
 
-dotenv.config();
-const app = express(); 
+import { app , server } from './Utils/socket.js';
+
+dotenv.config(); 
 const PORT = process.env.PORT || 5000; 
 
 app.use(cookieParser());
@@ -22,7 +24,10 @@ app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
     next();
   });
-app.use(express.json());
+  
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
 
 app.get("/", (req, res) => {
     res.send("Hello Hack Of Clans !! ")
@@ -31,8 +36,9 @@ app.get("/", (req, res) => {
 app.use("/api/hackofclans", clanRoutes);
 app.use("/api/hackofclans/messages", messageRoutes);
 app.use("/api/hackofclans/teams", teamRoutes)
+app.use("/api/hackofclans/explore", exploreRoutes)
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     connectDB();
     console.log("Server chal raha hai bhai");
 })

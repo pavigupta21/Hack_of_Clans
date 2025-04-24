@@ -18,7 +18,7 @@ const AccDivs = ({num}) => {
                     </span>
                     <div>
                         <AnimLine/>
-                        <Skills/>
+                        <Skills display={3}/>
                     </div>
             </div>
         </div>

@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
         required: true,
     },
     profilPic: {
-        type: String, 
+        type: String, // F**** sari galiyaaaannn di jayegi tumhee sale ek E nahi thaa profil:E:Pic mein yeh bug dhundte dhundte mere ........ ho gaye
         default: "",
     },
     lastlogin:{

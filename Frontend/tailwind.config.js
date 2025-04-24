@@ -8,6 +8,10 @@ export default {
     extend: {
       fontFamily: {
         poppins: ["Poppins", "sans-serif"],
+        stencil: ['"Stardos Stencil"', 'sans-serif'],
+        'black-ops': ['"Black Ops One"', 'cursive'],
+        'doto': ['"DotGothic16"', 'sans-serif'],
+        'dancing': ['"Dancing Script"', 'cursive'],
       },
     },
   },

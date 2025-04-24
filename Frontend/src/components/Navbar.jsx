@@ -28,12 +28,12 @@ const Navbar = () => {
         }
     }
 
-    console.log(active)
+    // console.log(active)
 
 
   return (
-    <div className='fixed bg-transparent flex justify-center h-16 w-full lg:px-2 sm:px-0'>
-        <div className='bg-black rounded-lg mx-4 my-2 w-full flex justify-between items-center'> 
+    <div className='fixed bg-gradient-to-t from-transparent via-black to-black flex justify-center h-16 w-full lg:px-2 sm:px-0 z-40'>
+        <div className='bg-transparent rounded-lg mx-4 my-2 w-full flex justify-between items-center'> 
             <div className='max-w-20 w-full'>
                 <img src="./Hack of Clans.png" alt="HOC" className='w-10 h-10'/>
             </div>
@@ -118,8 +118,7 @@ const Navbar = () => {
                 <motion.div 
                 initial = {{opacity: 0, y: -20}}
                 animate = {{opacity: 1, y: 0}}
-                whileHover={{scaleX:1.2}}
-                className='absolute w-[200px] bg-black top-[10px] text-white rounded-lg right-0'>
+                className='absolute w-[200px] bg-black top-[10px] text-white rounded-lg right-0 z-40'>
                     <div className='flex justify-between'>
                         <div>
                                 {/* empty */}

@@ -33,7 +33,7 @@ const MessageInput = () => {
 
     const handleSendMessage = async() => {
 
-        console.log("running", message)
+        // console.log("running", message)
         if(message == "" && !imagePreview ) return ; 
         
         try {
@@ -55,7 +55,7 @@ const MessageInput = () => {
     }
 
   return (
-    <div className='w-full h-[10vh] bg-black flex'>
+    <div className='w-full h-[10vh] bg-transparent backdrop-blur-2xl flex'>
 
         {imagePreview && (
             <div className="mb-3 flex items-center gap-2 absolute top-[78vh]">
@@ -93,8 +93,8 @@ const MessageInput = () => {
                 <ImageUp className='text-violet-600 size-7'/>
             </motion.button>
         </div>
-        <div className='w-10/12 h-[10vh] bg-red-800'> 
-            <div className='w-full h-[10vh] bg-black flex items-center relative mb-6'>
+        <div className='w-10/12 h-[10vh] '> 
+            <div className='w-full h-[10vh] bg-transparent backdrop-blur-2xl flex items-center relative mb-6'>
             <div className='absolute inset-y-0 right-0 flex items-center pr-3'>
             <motion.button
                 whileHover={{scale:1.05}}
@@ -108,6 +108,12 @@ const MessageInput = () => {
                 placeholder='Type message here'
                 onChange={(e) => setMessage(e.target.value)}
                 value = {message}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault(); // prevents line breaks if textarea later
+                    handleSendMessage();
+                  }
+                }}
                 className='w-full h-[5vh] pl-3 pr-10 py-2 bg-gray-900 bg-opacity-50 rounded-lg border border-gray-700 focus:border-purple-500 focus:ring-purple-500 text-white placeholder-gray-300 transition duration-200'
             />
             </div>

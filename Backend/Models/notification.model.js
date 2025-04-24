@@ -10,6 +10,18 @@ const notificationSchema = new Schema({
         type:  mongoose.Schema.Types.ObjectId
     },
 
+    cc: {
+        type: mongoose.Schema.Types.ObjectId
+    },
+
+    senderName: {
+        type: String,
+    },
+
+    teamName: {
+        type: String,
+    },
+
     heading: {
         type : String ,
         required: true
